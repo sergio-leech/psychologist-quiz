@@ -338,9 +338,7 @@
         }, 950)
       } else {
         btn.dataset.state = 'wrong'; sndWrong()
-        const opts = optionsEl.children
-        if(opts[correct]) opts[correct].dataset.state = 'correct'
-        setTimeout(lose, 1500)
+        setTimeout(lose, 1200)
       }
     }, 1200)
   }
@@ -365,7 +363,7 @@
     sndWin(); startConfetti()
   }
   function lose(){
-    el('loseText').textContent = `Правильна відповідь: «${QUESTIONS[idx].o[QUESTIONS[idx].c]}». Та це лише гра — спробуйте ще раз!`
+    el('loseText').textContent = 'Ця відповідь неправильна. Спробуйте ще раз — усе вийде!'
     el('loseOverlay').classList.add('show')
   }
 
