@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Хто хоче стати психологом — гра-вікторина</title>
+<meta name="description" content="Гра-вікторина «Хто хоче стати психологом»: 15 цікавих питань з психології. Пройди всі — і виграй приз!" />
+<meta property="og:title" content="Хто хоче стати психологом" />
+<meta property="og:description" content="15 питань з психології. Дай усі правильні відповіді — і отримай приз!" />
+<meta property="og:type" content="website" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --navy-0:#02030a; --navy-1:#071235; --navy-2:#0c2a6e; --navy-3:#123b94;
+    --gold-1:#ffe8a3; --gold-2:#f6c64b; --gold-3:#b8860b;
+    --amber:#ff9d2f; --green:#19c37d; --red:#e8453c;
+    --ink:#eaf1ff; --muted:#9fb3df;
+    --ring: 0 0 0 2px rgba(246,198,75,.0);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    font-family:'Montserrat',system-ui,sans-serif; color:var(--ink);
+    background:
+      radial-gradient(120vmax 90vmax at 50% -10%, #11306f 0%, transparent 55%),
+      radial-gradient(90vmax 70vmax at 50% 120%, #0a1d50 0%, transparent 60%),
+      linear-gradient(180deg, var(--navy-0), #050a1e 60%, var(--navy-0));
+    min-height:100%; overflow-x:hidden; position:relative;
+  }
+  /* rotating spotlight beams */
+  .beams{position:fixed; inset:-20% ; z-index:0; pointer-events:none; opacity:.5;
+    background:
+      conic-gradient(from 0deg at 50% 50%,
+        transparent 0 8deg, rgba(90,140,255,.10) 8deg 16deg, transparent 16deg 32deg,
+        rgba(246,198,75,.07) 32deg 40deg, transparent 40deg 70deg,
+        rgba(90,140,255,.08) 70deg 78deg, transparent 78deg 120deg);
+    animation:spin 60s linear infinite; filter:blur(4px);}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .vignette{position:fixed; inset:0; z-index:1; pointer-events:none;
+    box-shadow: inset 0 0 36vmax rgba(0,0,0,.7);}
+  .wrap{position:relative; z-index:3; max-width:1180px; margin:0 auto; padding:18px clamp(14px,4vw,32px) 48px;}
+
+  /* header */
+  header{display:flex; align-items:center; justify-content:space-between; gap:12px; padding:8px 0 4px;}
+  .logo{font-family:'Oswald',sans-serif; font-weight:700; letter-spacing:.04em; line-height:.98;
+    font-size:clamp(1.3rem,4.6vw,2.4rem); text-transform:uppercase;
+    background:linear-gradient(180deg,var(--gold-1),var(--gold-2) 55%,var(--gold-3));
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+    filter:drop-shadow(0 2px 12px rgba(246,198,75,.35));}
+  .logo small{display:block; font-size:.5em; color:var(--gold-2); -webkit-text-fill-color:var(--gold-2); letter-spacing:.3em;}
+  .tools{display:flex; gap:8px; flex:none}
+  .icon-btn{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;cursor:pointer;
+    color:var(--gold-1); background:radial-gradient(circle at 50% 30%, #163a85, #0a1e52);
+    border:1px solid rgba(246,198,75,.45); box-shadow:0 6px 18px -8px rgba(0,0,0,.8), inset 0 0 12px rgba(90,140,255,.25);
+    transition:transform .15s, filter .15s; font-size:18px;}
+  .icon-btn:hover{transform:translateY(-2px); filter:brightness(1.12)}
+
+  /* layout */
+  .stage{display:grid; grid-template-columns:1fr 300px; gap:clamp(16px,3vw,34px); margin-top:14px; align-items:start;}
+  @media (max-width:880px){ .stage{grid-template-columns:1fr} .ladder-box{order:-1} }
+
+  /* progress (mobile) */
+  .mobile-top{display:none}
+  @media (max-width:880px){
+    .mobile-top{display:flex; align-items:center; justify-content:space-between; gap:10px; margin-top:6px;
+      background:linear-gradient(180deg,#0e2a6b,#081b4c); border:1px solid rgba(246,198,75,.4); border-radius:14px; padding:10px 14px;}
+    .mobile-top b{font-family:'Oswald';font-size:1.1rem;color:var(--gold-1)}
+    .ladder-box{display:none}
+    .mobile-top .prizepill{color:var(--gold-2);font-size:.8rem;letter-spacing:.08em}
+  }
+
+  /* question hexagon */
+  .q-area{display:flex;flex-direction:column;gap:clamp(12px,2.4vw,22px); min-height:320px; justify-content:center}
+  .q-count{font-family:'Oswald';letter-spacing:.14em;color:var(--gold-2);font-size:.9rem;text-transform:uppercase;text-align:center}
+  .hex{position:relative; padding:3px;
+    clip-path:polygon(2.5% 0,97.5% 0,100% 50%,97.5% 100%,2.5% 100%,0 50%);
+    background:linear-gradient(90deg,var(--gold-3),var(--gold-1),var(--gold-3));
+    box-shadow:0 10px 30px -10px rgba(0,0,0,.7);}
+  .hex-in{clip-path:polygon(2.5% 0,97.5% 0,100% 50%,97.5% 100%,2.5% 100%,0 50%);
+    background:linear-gradient(180deg,#0b265f,#071a45); padding:clamp(16px,3vw,26px) clamp(26px,6vw,64px); text-align:center}
+  .question{font-size:clamp(1.05rem,2.5vw,1.5rem); font-weight:600; line-height:1.35}
+
+  .options{display:grid; grid-template-columns:1fr 1fr; gap:clamp(10px,1.8vw,16px)}
+  @media (max-width:560px){ .options{grid-template-columns:1fr} }
+  .opt{position:relative;padding:2px;cursor:pointer;border:none;background:transparent;width:100%;
+    clip-path:polygon(3% 0,97% 0,100% 50%,97% 100%,3% 100%,0 50%);}
+  .opt .skin{clip-path:polygon(3% 0,97% 0,100% 50%,97% 100%,3% 100%,0 50%);
+    background:linear-gradient(90deg,#1a4fb0,#0b2a6e,#1a4fb0);
+    display:flex; align-items:center; gap:12px; padding:13px clamp(16px,3vw,26px); transition:filter .15s, transform .12s;}
+  .opt .rim{position:absolute;inset:0;clip-path:polygon(3% 0,97% 0,100% 50%,97% 100%,3% 100%,0 50%);
+    background:linear-gradient(90deg,var(--gold-3),var(--gold-1),var(--gold-3)); z-index:-0;}
+  .opt .skin{position:relative;z-index:1}
+  .opt .letter{font-family:'Oswald';font-weight:700;color:var(--gold-1);font-size:1.15rem;min-width:1.2em}
+  .opt .txt{font-weight:600;font-size:clamp(.92rem,2vw,1.05rem);text-align:left;color:var(--ink)}
+  .opt:not(:disabled):hover .skin{filter:brightness(1.18)}
+  .opt:not(:disabled):hover{transform:translateY(-1px)}
+  .opt[data-state="selected"] .skin{background:linear-gradient(90deg,#ff9d2f,#d9731a,#ff9d2f);animation:pulse .7s ease-in-out infinite alternate}
+  .opt[data-state="selected"] .letter,.opt[data-state="selected"] .txt{color:#1a1203}
+  .opt[data-state="correct"] .skin{background:linear-gradient(90deg,#1fd089,#0f8f5c,#1fd089)}
+  .opt[data-state="correct"] .letter,.opt[data-state="correct"] .txt{color:#04210f}
+  .opt[data-state="wrong"] .skin{background:linear-gradient(90deg,#f05147,#b2251d,#f05147)}
+  .opt[data-state="wrong"] .letter,.opt[data-state="wrong"] .txt{color:#2a0603}
+  .opt[data-hidden="true"]{visibility:hidden}
+  .opt:disabled{cursor:default}
+  @keyframes pulse{to{filter:brightness(1.25)}}
+
+  .lifelines{display:flex;gap:12px;justify-content:center;margin-top:4px}
+  .ll{width:70px;height:46px;border-radius:30px;display:grid;place-items:center;cursor:pointer;
+    font-family:'Oswald';font-weight:700;letter-spacing:.02em;color:var(--gold-1);
+    background:radial-gradient(circle at 50% 20%,#17407f,#0a1e52);border:1px solid rgba(246,198,75,.5);
+    box-shadow:inset 0 0 14px rgba(90,140,255,.25);transition:transform .15s,filter .15s}
+  .ll:hover{transform:translateY(-2px);filter:brightness(1.12)}
+  .ll[disabled]{opacity:.35;cursor:default;filter:grayscale(.6);text-decoration:line-through}
+
+  /* ladder */
+  .ladder-box{background:linear-gradient(180deg,rgba(14,40,105,.6),rgba(7,20,56,.6));
+    border:1px solid rgba(246,198,75,.3);border-radius:16px;padding:12px;backdrop-filter:blur(4px)}
+  .ladder-title{font-family:'Oswald';text-align:center;color:var(--gold-2);letter-spacing:.14em;font-size:.82rem;margin-bottom:8px;text-transform:uppercase}
+  .rung{display:flex;align-items:center;gap:10px;padding:7px 12px;border-radius:9px;margin:2px 0;font-family:'Oswald';font-size:.98rem;letter-spacing:.02em;color:var(--muted)}
+  .rung .n{min-width:1.6em;text-align:right;color:var(--gold-3);font-weight:700}
+  .rung.passed{color:#bfe9d3} .rung.passed .n{color:var(--green)}
+  .rung.active{background:linear-gradient(90deg,#ff9d2f,#d9731a);color:#1a1203;box-shadow:0 0 18px rgba(255,157,47,.5)}
+  .rung.active .n{color:#1a1203}
+  .rung.prize{color:var(--gold-1)} .rung.prize .n{color:var(--gold-2)}
+
+  /* overlays */
+  .overlay{position:fixed;inset:0;z-index:50;display:none;place-items:center;padding:20px;
+    background:radial-gradient(circle at 50% 40%,rgba(10,25,70,.75),rgba(2,3,10,.92))}
+  .overlay.show{display:grid}
+  .modal{position:relative;z-index:2;width:min(540px,94vw);text-align:center;
+    background:linear-gradient(180deg,#0c2a6e,#071842);border:2px solid transparent;
+    border-image:linear-gradient(180deg,var(--gold-1),var(--gold-3)) 1;border-radius:20px;
+    padding:clamp(26px,5vw,42px);box-shadow:0 30px 80px -24px rgba(0,0,0,.8);animation:pop .5s cubic-bezier(.2,.8,.3,1.2)}
+  @keyframes pop{from{transform:scale(.8);opacity:0}to{transform:scale(1);opacity:1}}
+  .modal h2{font-family:'Oswald';font-size:clamp(1.6rem,6vw,2.6rem);text-transform:uppercase;letter-spacing:.03em;
+    background:linear-gradient(180deg,var(--gold-1),var(--gold-2),var(--gold-3));-webkit-background-clip:text;background-clip:text;color:transparent;
+    filter:drop-shadow(0 2px 10px rgba(246,198,75,.4))}
+  .modal p{color:var(--muted);margin-top:10px;font-size:1rem}
+  .prize-reveal{margin:20px auto;padding:18px;border-radius:14px;background:rgba(246,198,75,.1);border:1px dashed rgba(246,198,75,.5)}
+  .prize-reveal .label{color:var(--gold-2);font-size:.8rem;letter-spacing:.2em;text-transform:uppercase}
+  .prize-reveal .name{font-family:'Oswald';font-size:clamp(1.5rem,5vw,2.2rem);color:var(--gold-1);margin-top:4px}
+  .btn{display:inline-flex;align-items:center;gap:10px;margin-top:8px;padding:14px 28px;border:none;border-radius:40px;cursor:pointer;
+    font-family:'Oswald';font-weight:700;font-size:1.05rem;letter-spacing:.04em;text-transform:uppercase;color:#07213f;
+    background:linear-gradient(180deg,var(--gold-1),var(--gold-2));box-shadow:0 12px 30px -10px rgba(246,198,75,.6);transition:transform .15s,filter .15s;text-decoration:none}
+  .btn:hover{transform:translateY(-2px);filter:brightness(1.06)}
+  .btn.ghost{background:transparent;color:var(--gold-1);border:1px solid rgba(246,198,75,.5);box-shadow:none}
+  .modal .actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:6px}
+  .lose h2{background:linear-gradient(180deg,#ffd0cb,#e8453c,#8f2019);-webkit-background-clip:text;background-clip:text;color:transparent;filter:none}
+  .tg-note{font-size:.78rem;color:var(--muted);margin-top:14px}
+  #confetti{position:fixed;inset:0;z-index:1;pointer-events:none;display:none}
+  .overlay.show #confetti{display:block}
+
+  /* intro */
+  .intro{text-align:center;max-width:680px;margin:6vh auto 0}
+  .intro .big{font-family:'Oswald';font-weight:700;text-transform:uppercase;line-height:1;
+    font-size:clamp(2rem,8vw,4rem);
+    background:linear-gradient(180deg,var(--gold-1),var(--gold-2) 55%,var(--gold-3));-webkit-background-clip:text;background-clip:text;color:transparent;
+    filter:drop-shadow(0 4px 20px rgba(246,198,75,.4))}
+  .intro p{color:var(--muted);margin-top:16px;font-size:1.05rem}
+  .intro .mystery{display:inline-flex;align-items:center;gap:10px;margin-top:20px;padding:12px 20px;border-radius:40px;
+    background:rgba(246,198,75,.1);border:1px dashed rgba(246,198,75,.5);color:var(--gold-1);font-weight:600}
+  .hidden{display:none !important}
+  .fade{animation:fade .45s ease both}
+  @keyframes fade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+<div class="beams"></div>
+<div class="vignette"></div>
+
+<div class="wrap">
+  <header>
+    <div class="logo">Хто хоче стати<br>психологом<small>гра-вікторина</small></div>
+    <div class="tools">
+      <button class="icon-btn" id="soundBtn" title="Звук" aria-label="Звук">🔊</button>
+      <button class="icon-btn" id="restartBtn" title="Почати заново" aria-label="Почати заново">↻</button>
+    </div>
+  </header>
+
+  <!-- INTRO -->
+  <section id="intro" class="intro">
+    <div class="big">Готові?</div>
+    <p>15 нескладних і цікавих питань з психології. Відповідайте правильно на кожне — і дійдіть до головного призу.</p>
+    <div class="mystery">🎁 Головний приз — таємниця. Дізнаєтесь лише коли переможете!</div>
+    <div style="margin-top:28px"><button class="btn" id="startBtn">Почати гру ▶</button></div>
+  </section>
+
+  <!-- GAME -->
+  <section id="game" class="hidden">
+    <div class="mobile-top">
+      <b id="mCount">Питання 1/15</b>
+      <span class="prizepill">🎁 Приз: ?</span>
+    </div>
+    <div class="stage">
+      <div class="q-area fade" id="qArea">
+        <div class="q-count" id="qCount">Питання 1 із 15</div>
+        <div class="hex"><div class="hex-in"><div class="question" id="qText">—</div></div></div>
+        <div class="options" id="options"></div>
+        <div class="lifelines">
+          <button class="ll" id="ll5050" title="Прибрати два неправильні варіанти">50:50</button>
+        </div>
+      </div>
+      <aside class="ladder-box">
+        <div class="ladder-title">Сходи до призу</div>
+        <div id="ladder"></div>
+      </aside>
+    </div>
+  </section>
+</div>
+
+<!-- WIN -->
+<div class="overlay" id="winOverlay">
+  <canvas id="confetti"></canvas>
+  <div class="modal">
+    <h2>Вітаємо!</h2>
+    <p>Ви відповіли правильно на всі 15 питань і виграли приз:</p>
+    <div class="prize-reveal">
+      <div class="label">Ваш приз</div>
+      <div class="name">👁️ Корекція зору</div>
+    </div>
+    <div class="actions">
+      <a class="btn" id="claimBtn" href="#" target="_blank" rel="noopener">Отримати приз ✈️</a>
+      <button class="btn ghost" id="winRestart">Зіграти ще</button>
+    </div>
+    <div class="tg-note">Кнопка надішле повідомлення в Telegram <b>@sergio_lee18</b>.</div>
+  </div>
+</div>
+
+<!-- LOSE -->
+<div class="overlay" id="loseOverlay">
+  <div class="modal lose">
+    <h2>На жаль, ні…</h2>
+    <p id="loseText">Правильна відповідь була іншою. Та це лише гра — спробуйте ще раз!</p>
+    <div class="actions">
+      <button class="btn" id="loseRestart">Спробувати ще раз ↻</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const QUESTIONS = [
+    { q:'Як називається наука про психіку та поведінку людини?', o:['Біологія','Психологія','Географія','Астрономія'], c:1 },
+    { q:'Кого вважають засновником психоаналізу?', o:['Карл Юнг','Іван Павлов','Зигмунд Фрейд','Абрахам Маслоу'], c:2 },
+    { q:'Як називається відома піраміда потреб людини?', o:['Піраміда Маслоу','Піраміда Фрейда','Піраміда Хеопса','Піраміда Юнга'], c:0 },
+    { q:'Що таке емпатія?', o:['Боязнь висоти','Здатність співпереживати','Втрата памʼяті','Любов до солодкого'], c:1 },
+    { q:'Який гормон часто називають «гормоном щастя»?', o:['Інсулін','Адреналін','Серотонін','Кортизол'], c:2 },
+    { q:'Як називається боязнь замкнутого простору?', o:['Клаустрофобія','Агорафобія','Арахнофобія','Акрофобія'], c:0 },
+    { q:'Що вивчає когнітивна психологія?', o:['Рослини','Памʼять і мислення','Гірські породи','Рух планет'], c:1 },
+    { q:'Хто досліджував умовні рефлекси на собаках?', o:['Зигмунд Фрейд','Іван Павлов','Жан Піаже','Карл Роджерс'], c:1 },
+    { q:'Як називають тривале емоційне виснаження від роботи?', o:['Натхнення','Вигорання','Релаксація','Медитація'], c:1 },
+    { q:'Хто такий інтроверт?', o:['Той, хто любить галас','Зосереджений на внутрішньому світі','Людина без емоцій','Лідер натовпу'], c:1 },
+    { q:'Як називається віра, що очікування впливає на результат?', o:['Ефект Доплера','Ефект метелика','Ефект плацебо','Ефект Моцарта'], c:2 },
+    { q:'Який психологічний тест використовує чорнильні плями?', o:['Тест Роршаха','Тест Тюрінга','Тест на IQ','Детектор брехні'], c:0 },
+    { q:'Що таке самооцінка?', o:['Оцінка за іспит','Ставлення людини до себе','Ціна товару','Оцінка від друзів'], c:1 },
+    { q:'Яка памʼять утримує інформацію лише кілька секунд?', o:['Довготривала','Короткочасна','Генетична','Мʼязова'], c:1 },
+    { q:'Що найкраще допомагає впоратися зі стресом?', o:['Самозвинувачення','Сон, рух і підтримка близьких','Ігнорування почуттів','Багато кофеїну'], c:1 },
+  ]
+  const LETTERS = ['А','Б','В','Г']
+  const TG_LINK = 'https://t.me/share/url?url=' + encodeURIComponent(location.href)
+    + '&text=' + encodeURIComponent('Переможець Аліна Суздальська')
+
+  let idx = 0, locked = false, used5050 = false, soundOn = true
+
+  const el = (id)=>document.getElementById(id)
+  const intro = el('intro'), game = el('game')
+  const qArea = el('qArea'), qText = el('qText'), qCount = el('qCount'), mCount = el('mCount')
+  const optionsEl = el('options'), ladderEl = el('ladder'), ll5050 = el('ll5050')
+
+  /* ---- sound (WebAudio, no files) ---- */
+  let actx = null
+  function ac(){ if(!actx){ try{ actx = new (window.AudioContext||window.webkitAudioContext)() }catch(e){} } return actx }
+  function tone(freq, dur, type, vol){
+    if(!soundOn) return; const c = ac(); if(!c) return
+    const o = c.createOscillator(), g = c.createGain()
+    o.type = type||'sine'; o.frequency.value = freq
+    g.gain.value = vol||0.06; o.connect(g); g.connect(c.destination)
+    const t = c.currentTime; o.start(t)
+    g.gain.exponentialRampToValueAtTime(0.0001, t + (dur||0.2))
+    o.stop(t + (dur||0.2))
+  }
+  const sndSelect = ()=>tone(300,0.12,'triangle',0.05)
+  const sndCorrect = ()=>{ tone(523,0.14,'sine',0.07); setTimeout(()=>tone(784,0.28,'sine',0.07),130) }
+  const sndWrong = ()=>{ tone(160,0.5,'sawtooth',0.07) }
+  const sndWin = ()=>{ [523,659,784,1047].forEach((f,i)=>setTimeout(()=>tone(f,0.4,'sine',0.08), i*160)) }
+
+  /* ---- ladder ---- */
+  function buildLadder(){
+    ladderEl.innerHTML = ''
+    for(let i=QUESTIONS.length; i>=1; i--){
+      const d = document.createElement('div')
+      d.className = 'rung' + (i===QUESTIONS.length?' prize':'')
+      d.dataset.i = i
+      d.innerHTML = `<span class="n">${i}</span><span>${i===QUESTIONS.length?'🎁 ПРИЗ':'Крок '+i}</span>`
+      ladderEl.appendChild(d)
+    }
+  }
+  function updateLadder(){
+    [...ladderEl.children].forEach(r=>{
+      const i = +r.dataset.i
+      r.classList.toggle('active', i === idx+1)
+      r.classList.toggle('passed', i < idx+1)
+    })
+  }
+
+  /* ---- render question ---- */
+  function render(){
+    const Q = QUESTIONS[idx]
+    qText.textContent = Q.q
+    qCount.textContent = `Питання ${idx+1} із ${QUESTIONS.length}`
+    mCount.textContent = `Питання ${idx+1}/${QUESTIONS.length}`
+    optionsEl.innerHTML = ''
+    Q.o.forEach((text,i)=>{
+      const b = document.createElement('button')
+      b.className = 'opt'; b.type='button'
+      b.innerHTML = `<span class="rim"></span><span class="skin"><span class="letter">${LETTERS[i]}</span><span class="txt">${text}</span></span>`
+      b.addEventListener('click', ()=>choose(i,b))
+      optionsEl.appendChild(b)
+    })
+    locked = false
+    qArea.classList.remove('fade'); void qArea.offsetWidth; qArea.classList.add('fade')
+    updateLadder()
+  }
+
+  function choose(i, btn){
+    if(locked) return
+    locked = true
+    const c = ac(); if(c && c.state==='suspended') c.resume()
+    sndSelect()
+    btn.dataset.state = 'selected'
+    const correct = QUESTIONS[idx].c
+    // suspense
+    setTimeout(()=>{
+      if(i === correct){
+        btn.dataset.state = 'correct'; sndCorrect()
+        setTimeout(()=>{
+          if(idx === QUESTIONS.length-1){ win() }
+          else { idx++; render() }
+        }, 950)
+      } else {
+        btn.dataset.state = 'wrong'; sndWrong()
+        const opts = optionsEl.children
+        if(opts[correct]) opts[correct].dataset.state = 'correct'
+        setTimeout(lose, 1500)
+      }
+    }, 1200)
+  }
+
+  /* ---- 50:50 ---- */
+  ll5050.addEventListener('click', ()=>{
+    if(used5050 || locked) return
+    used5050 = true; ll5050.disabled = true
+    const correct = QUESTIONS[idx].c
+    const wrong = [0,1,2,3].filter(i=>i!==correct)
+    // keep one random wrong + correct, hide the other two
+    for(let x=wrong.length-1;x>0;x--){ const j=Math.floor(Math.random()*(x+1)); [wrong[x],wrong[j]]=[wrong[j],wrong[x]] }
+    const hide = wrong.slice(0,2)
+    hide.forEach(i=>{ const o = optionsEl.children[i]; if(o){ o.dataset.hidden='true'; o.disabled=true } })
+    tone(420,0.15,'triangle',0.05)
+  })
+
+  /* ---- win / lose ---- */
+  function win(){
+    el('claimBtn').href = TG_LINK
+    el('winOverlay').classList.add('show')
+    sndWin(); startConfetti()
+  }
+  function lose(){
+    el('loseText').textContent = `Правильна відповідь: «${QUESTIONS[idx].o[QUESTIONS[idx].c]}». Та це лише гра — спробуйте ще раз!`
+    el('loseOverlay').classList.add('show')
+  }
+
+  function startGame(){
+    idx = 0; used5050 = false; locked = false; ll5050.disabled = false
+    intro.classList.add('hidden'); game.classList.remove('hidden')
+    buildLadder(); render()
+  }
+  function restart(){
+    el('winOverlay').classList.remove('show'); el('loseOverlay').classList.remove('show')
+    stopConfetti(); startGame()
+  }
+
+  el('startBtn').addEventListener('click', startGame)
+  el('restartBtn').addEventListener('click', ()=>{ if(!intro.classList.contains('hidden')) return; restart() })
+  el('loseRestart').addEventListener('click', restart)
+  el('winRestart').addEventListener('click', restart)
+  el('soundBtn').addEventListener('click', ()=>{
+    soundOn = !soundOn; el('soundBtn').textContent = soundOn ? '🔊' : '🔇'
+    if(soundOn){ const c=ac(); if(c&&c.state==='suspended') c.resume(); tone(500,0.1,'sine',0.05) }
+  })
+
+  /* ---- confetti ---- */
+  const cv = el('confetti'), cx = cv.getContext('2d')
+  let parts = [], raf = null
+  function sizeC(){ cv.width = innerWidth; cv.height = innerHeight }
+  function startConfetti(){
+    sizeC(); addEventListener('resize', sizeC)
+    const colors = ['#f6c64b','#ffe8a3','#19c37d','#5a8cff','#ff9d2f','#ffffff']
+    parts = Array.from({length:160},()=>({
+      x:Math.random()*cv.width, y:-20-Math.random()*cv.height*0.5,
+      r:4+Math.random()*6, c:colors[Math.floor(Math.random()*colors.length)],
+      vy:2+Math.random()*4, vx:-1.5+Math.random()*3, rot:Math.random()*6.28, vr:-0.2+Math.random()*0.4
+    }))
+    cancelAnimationFrame(raf); loopC()
+  }
+  function loopC(){
+    cx.clearRect(0,0,cv.width,cv.height)
+    parts.forEach(p=>{
+      p.x+=p.vx; p.y+=p.vy; p.rot+=p.vr
+      if(p.y>cv.height+20){ p.y=-20; p.x=Math.random()*cv.width }
+      cx.save(); cx.translate(p.x,p.y); cx.rotate(p.rot); cx.fillStyle=p.c
+      cx.fillRect(-p.r/2,-p.r/2,p.r,p.r*0.6); cx.restore()
+    })
+    raf = requestAnimationFrame(loopC)
+  }
+  function stopConfetti(){ cancelAnimationFrame(raf); raf=null; cx && cx.clearRect(0,0,cv.width,cv.height) }
+})();
+</script>
+</body>
+</html>
